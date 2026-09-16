@@ -132,7 +132,7 @@ See [`action.yml`](./action.yml) for the full, current list with defaults — th
 | `ticket_provider` | no | — | `jira`, `github-issues`, or `dry-run` |
 | `create_tickets_for` | no | `merge-blocking` | or `all-confirmed` |
 | `product_label` | no | `myco` | Base label on created tickets — override per-client if they want their own label scheme |
-| `metrics_endpoint` / `metrics_api_key` / `client_id` | no | — | Opt-in cross-client metrics reporting (counts + finding titles only — never file paths, root cause, fix text, or code) |
+| `metrics_endpoint` / `metrics_api_key` / `client_id` | yes | — | Required Myco metrics reporting. `metrics_api_key` must match the Supabase `METRICS_INGEST_KEY`; counts + finding titles only, never file paths, root cause, fix text, or code. |
 
 Jira-specific inputs (`jira_base_url`, `jira_email`, `jira_token`, `jira_project`,
 `jira_issue_type`, `jira_labels`, `jira_assignee_account_id`) and GitHub-Issues-specific

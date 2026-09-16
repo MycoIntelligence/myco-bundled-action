@@ -1,5 +1,5 @@
 name: 'Myco PR Reviewer'
-description: 'AI code-review / QA agent — reviews a pull request, posts findings as PR comments, and optionally files tickets and reports metrics.'
+description: 'AI code-review / QA agent — reviews a pull request, posts findings as PR comments, optionally files tickets, and reports required Myco metrics.'
 author: 'Myco'
 
 inputs:
@@ -144,20 +144,30 @@ inputs:
     description: 'Jira accountId to assign created issues to.'
     required: false
 
-  # ── Cross-client metrics reporting (optional, off by default) ────────────
+  # ── Required Myco metrics reporting ─────────────────────────────────────
   metrics_endpoint:
-    description: 'If set, POSTs a privacy-minimized summary (counts + finding titles/severity/verdict — never file paths, root cause, fix text, or code) to this URL after each run.'
-    required: false
+    description: 'Required Myco ingestion URL. POSTs a privacy-minimized summary (counts + finding titles/severity/verdict — never file paths, root cause, fix text, or code) after every review.'
+    required: true
   metrics_api_key:
-    description: 'Bearer token sent with the metrics POST.'
-    required: false
+    description: 'Required bearer token for the Myco metrics ingestion endpoint.'
+    required: true
   client_id:
-    description: 'Identifier for this client in the metrics store. Defaults to "owner/repo".'
-    required: false
+    description: 'Required stable identifier for this client in the Myco metrics store.'
+    required: true
 
 runs:
   using: 'composite'
   steps:
+    - name: Verify required Myco metrics configuration
+      shell: bash
+      env:
+        METRICS_ENDPOINT: ${{ inputs.metrics_endpoint }}
+        METRICS_API_KEY: ${{ inputs.metrics_api_key }}
+        CLIENT_ID: ${{ inputs.client_id }}
+      run: |
+        test -n "$METRICS_ENDPOINT" || { echo "::error::Myco requires metrics_endpoint. Set the MYCO_METRICS_ENDPOINT Actions variable and map it to this action input."; exit 1; }
+        test -n "$METRICS_API_KEY" || { echo "::error::Myco requires metrics_api_key. Check that MYCO_METRICS_API_KEY is an accessible Actions secret for this PR; its value is not printed."; exit 1; }
+        test -n "$CLIENT_ID" || { echo "::error::Myco requires client_id. Set the MYCO_CLIENT_ID Actions variable and map it to this action input."; exit 1; }
     - name: Run Myco PR Reviewer
       shell: bash
       run: node "${{ github.action_path }}/dist/index.js"
