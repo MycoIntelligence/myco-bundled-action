@@ -3,16 +3,17 @@
 Bundled, distributable build of the Myco PR Reviewer agent, packaged as a GitHub composite action.
 
 This repo exists so pilot clients can consume the reviewer with a single line in their own
-workflow — `uses: AbhishikaAgarwal/myco-bundled-action@v1` — without ever checking out or
-seeing the private source (that lives in the `Zenith` repo). `dist/index.js` here is a
-built artifact (via `@vercel/ncc`), not source to edit directly — make changes in `Zenith`
-and re-publish here.
+workflow — `uses: MycoIntelligence/myco-bundled-action@v1`. The source of truth lives in
+the private [`Myco-backend`](https://github.com/MycoIntelligence/Myco-backend) repository.
+`dist/index.js` here is a built artifact (via `@vercel/ncc`), not source to edit directly —
+make changes in `Myco-backend` and re-publish here.
 
 ## Access
 
-This repo is private. Each pilot client's CI needs read access to it — invite their GitHub
-account/org as a collaborator (Settings → Collaborators) before they wire up the workflow
-below, or their job will fail to resolve the `uses:` reference.
+This action repository is currently public, so a client can reference it directly from its
+own workflow. The bundled file is minified, but it is not a security boundary: anyone can
+inspect its strings and behavior. Do not place provider keys, client data, or proprietary
+logic in this repository.
 
 ## Usage
 
@@ -32,7 +33,7 @@ jobs:
   review:
     runs-on: ubuntu-latest
     steps:
-      - uses: AbhishikaAgarwal/myco-bundled-action@v1
+      - uses: MycoIntelligence/myco-bundled-action@v1
         with:
           pr_link: ${{ github.event.pull_request.html_url }}
           llm_provider: ${{ vars.LLM_PROVIDER || 'openai' }}   # optional: set once as a repo/org Variable; action falls back to "openai" when unset
@@ -140,7 +141,7 @@ provider.
 
 ## Publishing an update
 
-From the `Zenith` repo:
+From the `Myco-backend` repo:
 
 ```bash
 npx @vercel/ncc build src/index.ts -o dist -m
