@@ -25,7 +25,7 @@ inputs:
   litellm_model:
     description: 'Model name to request from the provider. Only used when llm_provider is "openai".'
     required: false
-    default: 'gpt-4.1'
+    default: 'gpt-5.5'
   anthropic_api_key:
     description: '(Legacy — prefer api_key) Anthropic API key. Required when llm_provider is "anthropic" and api_key is not set.'
     required: false

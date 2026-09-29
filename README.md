@@ -40,7 +40,7 @@ jobs:
           api_key: ${{ secrets.LLM_API_KEY }}
           # litellm_base_url defaults to https://api.openai.com/v1 (only used when llm_provider is "openai") —
           # override if you're using a different OpenAI-compatible provider or a LiteLLM proxy.
-          # litellm_model defaults to gpt-4.1 (only used when llm_provider is "openai").
+          # litellm_model defaults to gpt-5.5 (only used when llm_provider is "openai").
 ```
 
 **Why `vars.LLM_PROVIDER` instead of writing `llm_provider: anthropic` inline**: `api_key` is the same
@@ -117,7 +117,7 @@ See [`action.yml`](./action.yml) for the full, current list with defaults — th
 | `api_key` | recommended | — | API key for whichever `llm_provider` is set — one input regardless of provider |
 | `litellm_api_key` | legacy, if `llm_provider: openai` and `api_key` unset | — | Your LLM provider's API key (prefer `api_key`) |
 | `litellm_base_url` | no | `https://api.openai.com/v1` | Any OpenAI-compatible endpoint |
-| `litellm_model` | no | `gpt-4.1` | |
+| `litellm_model` | no | `gpt-5.5` | |
 | `anthropic_api_key` | legacy, if `llm_provider: anthropic` and `api_key` unset | — | Native Anthropic API key (prefer `api_key`) |
 | `anthropic_model` | no | — | Only used with `llm_provider: anthropic` |
 | `anthropic_workspace_id` | no | — | Only needed if your Anthropic key is not scoped to a workspace (see error note above). Only used with `llm_provider: anthropic` |
