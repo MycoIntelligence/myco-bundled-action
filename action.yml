@@ -9,11 +9,31 @@ inputs:
 
   # ── LLM provider (BYO key) ──────────────────────────────────────────────
   llm_provider:
-    description: '"openai" (default — any OpenAI-compatible endpoint: OpenAI itself, a LiteLLM proxy, Together, Groq, Gemini''s own OpenAI-compatible endpoint, etc) or "anthropic" (native Anthropic Messages API, for a raw Anthropic key).'
+    description: 'LLM provider to use: "groq" (high-speed inference via Groq Cloud), "grok" (native xAI Grok API), "anthropic" (native Anthropic Messages API), or "openai" (default — OpenAI or OpenAI-compatible LiteLLM proxy).'
     required: false
     default: 'openai'
   api_key:
-    description: 'API key for whichever llm_provider is configured — the recommended single input. Set llm_provider from a repo/org Variable named LLM_PROVIDER and this stays the same input either way, so switching providers never requires also swapping which input the key goes under. litellm_api_key / anthropic_api_key below still work and take precedence if set explicitly, for backward compatibility.'
+    description: 'API key for whichever llm_provider is configured — the recommended single input. Set llm_provider from a repo/org Variable named LLM_PROVIDER and this stays the same input either way, so switching providers never requires also swapping which input the key goes under. litellm_api_key / anthropic_api_key / groq_api_key / grok_api_key below still work and take precedence if set explicitly, for backward compatibility.'
+    required: false
+  groq_api_key:
+    description: 'Groq API key. Used when llm_provider is "groq" (or auto-detected from key starting with gsk_).'
+    required: false
+  groq_model:
+    description: 'Groq model name. Defaults to "llama-3.3-70b-versatile".'
+    required: false
+    default: 'llama-3.3-70b-versatile'
+  groq_base_url:
+    description: 'Optional override for Groq OpenAI-compatible base URL. Defaults to "https://api.groq.com/openai/v1".'
+    required: false
+  grok_api_key:
+    description: 'xAI Grok API key. Used when llm_provider is "grok" (or auto-detected from key starting with xai-).'
+    required: false
+  grok_model:
+    description: 'xAI Grok model name. Defaults to "grok-2-latest".'
+    required: false
+    default: 'grok-2-latest'
+  grok_base_url:
+    description: 'Optional override for xAI Grok base URL. Defaults to "https://api.x.ai/v1".'
     required: false
   litellm_api_key:
     description: '(Legacy — prefer api_key) API key for the LLM provider. Required when llm_provider is "openai" (the default) and api_key is not set.'
@@ -175,6 +195,12 @@ runs:
         PR_LINK: ${{ inputs.pr_link }}
         LLM_PROVIDER: ${{ inputs.llm_provider || 'openai' }}
         API_KEY: ${{ inputs.api_key }}
+        GROQ_API_KEY: ${{ inputs.groq_api_key || inputs.api_key }}
+        GROQ_MODEL: ${{ inputs.groq_model }}
+        GROQ_BASE_URL: ${{ inputs.groq_base_url }}
+        GROK_API_KEY: ${{ inputs.grok_api_key || inputs.api_key }}
+        GROK_MODEL: ${{ inputs.grok_model }}
+        GROK_BASE_URL: ${{ inputs.grok_base_url }}
         LITELLM_API_KEY: ${{ inputs.litellm_api_key }}
         LITELLM_BASE_URL: ${{ inputs.litellm_base_url }}
         LITELLM_MODEL: ${{ inputs.litellm_model }}
