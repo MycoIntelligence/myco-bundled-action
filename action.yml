@@ -21,7 +21,6 @@ inputs:
   groq_model:
     description: 'Groq model name. Defaults to "llama-3.3-70b-versatile".'
     required: false
-    default: 'llama-3.3-70b-versatile'
   groq_base_url:
     description: 'Optional override for Groq OpenAI-compatible base URL. Defaults to "https://api.groq.com/openai/v1".'
     required: false
@@ -31,7 +30,6 @@ inputs:
   grok_model:
     description: 'xAI Grok model name. Defaults to "grok-2-latest".'
     required: false
-    default: 'grok-2-latest'
   grok_base_url:
     description: 'Optional override for xAI Grok base URL. Defaults to "https://api.x.ai/v1".'
     required: false
