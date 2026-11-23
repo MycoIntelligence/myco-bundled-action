@@ -1,0 +1,29 @@
+name: 'MyCo Entitlement Authorizer'
+description: 'Requests an Entitlement Grant token from the MyCo Control Plane using GitHub Actions OIDC.'
+author: 'MyCo'
+inputs:
+  control_plane_url:
+    description: 'MyCo Control Plane URL'
+    required: false
+    default: ${{ vars.MYCO_CONTROL_PLANE_URL || 'https://myco-deploy.onrender.com' }}
+  oidc_audience:
+    description: 'Audience claim for GitHub OIDC token'
+    required: false
+    default: ${{ vars.MYCO_OIDC_AUDIENCE || 'https://myco.intelligence' }}
+outputs:
+  grant:
+    description: 'Entitlement Grant E-JWT token'
+    value: ${{ steps.auth.outputs.grant }}
+  client_id:
+    description: 'Customer ID / Client identifier'
+    value: ${{ steps.auth.outputs.client_id }}
+runs:
+  using: 'composite'
+  steps:
+    - name: Authorize with MyCo Control Plane
+      id: auth
+      shell: bash
+      env:
+        MYCO_CONTROL_PLANE_URL: ${{ inputs.control_plane_url }}
+        MYCO_OIDC_AUDIENCE: ${{ inputs.oidc_audience }}
+      run: node "${{ github.action_path }}/index.js"
