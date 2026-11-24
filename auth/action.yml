@@ -1,9 +1,9 @@
-name: 'Entitlement Authorizer'
-description: 'Requests an Entitlement Grant token from the Control Plane using GitHub Actions OIDC.'
-author: 'Cloud Intelligence'
+name: 'Myco Entitlement Authorizer'
+description: 'Requests an Entitlement Grant token from the Myco Control Plane using GitHub Actions OIDC.'
+author: 'Myco'
 inputs:
   control_plane_url:
-    description: 'Control Plane URL'
+    description: 'Myco Control Plane URL'
     required: false
     default: ''
   oidc_audience:
@@ -20,12 +20,12 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - name: Authorize with Control Plane
+    - name: Authorize with Myco Control Plane
       id: auth
       shell: bash
       env:
-        CONTROL_PLANE_URL: ${{ inputs.control_plane_url }}
         MYCO_CONTROL_PLANE_URL: ${{ inputs.control_plane_url }}
-        OIDC_AUDIENCE: ${{ inputs.oidc_audience }}
+        CONTROL_PLANE_URL: ${{ inputs.control_plane_url }}
         MYCO_OIDC_AUDIENCE: ${{ inputs.oidc_audience }}
+        OIDC_AUDIENCE: ${{ inputs.oidc_audience }}
       run: node "${{ github.action_path }}/index.js"

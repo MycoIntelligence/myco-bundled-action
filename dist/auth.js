@@ -52,9 +52,9 @@ async function main() {
 
     if (!authRes.ok || !data.authorized) {
       const code = data.code || `HTTP_${authRes.status}`;
-      const reason = data.reason || data.error?.message || data.message || 'Authorization rejected by Control Plane';
-      console.error(`::error::Authorization Denied [${code}]: ${reason}`);
-      console.error('Please verify that the repository is connected and an active seat is assigned to the PR author.');
+      const reason = data.reason || data.error?.message || data.message || 'Authorization rejected by Myco Control Plane';
+      console.error(`::error::Myco Authorization Denied [${code}]: ${reason}`);
+      console.error('Please verify that the repository is connected in Myco and an active seat is assigned to the PR author.');
       process.exit(1);
     }
 
@@ -72,7 +72,7 @@ async function main() {
       appendFileSync(process.env.GITHUB_OUTPUT, `grant=${grantToken}\nclient_id=${clientId}\n`);
     }
 
-    console.log(`✅ Review access authorized for ${repository} (Client ID: ${clientId})`);
+    console.log(`✅ Myco review access authorized for ${repository} (Customer ID: ${clientId})`);
   } catch (err) {
     console.error(`::error::Authorization Error: ${err.message || err}`);
     process.exit(1);
