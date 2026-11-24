@@ -164,8 +164,9 @@ inputs:
 
   # ── Required Myco metrics reporting ─────────────────────────────────────
   metrics_endpoint:
-    description: 'Required Myco ingestion URL. POSTs a privacy-minimized summary (counts + finding titles/severity/verdict — never file paths, root cause, fix text, or code) after every review.'
-    required: true
+    description: 'Myco metrics ingestion URL (auto-configured by auth action if omitted).'
+    required: false
+    default: ''
   metrics_api_key:
     description: 'Required bearer token for the Myco metrics ingestion endpoint.'
     required: true
@@ -179,11 +180,12 @@ runs:
     - name: Verify required Myco metrics configuration
       shell: bash
       env:
-        METRICS_ENDPOINT: ${{ inputs.metrics_endpoint }}
+        METRICS_ENDPOINT: ${{ inputs.metrics_endpoint || env.METRICS_ENDPOINT || env.MYCO_METRICS_ENDPOINT || 'https://myco-deploy.onrender.com/api/ingest-metrics' }}
         METRICS_API_KEY: ${{ inputs.metrics_api_key }}
         CLIENT_ID: ${{ inputs.client_id }}
       run: |
-        test -n "$METRICS_ENDPOINT" || { echo "::error::Myco requires metrics_endpoint. Set the MYCO_METRICS_ENDPOINT Actions variable and map it to this action input."; exit 1; }
+        TARGET_ENDPOINT="${METRICS_ENDPOINT:-${MYCO_METRICS_ENDPOINT:-https://myco-deploy.onrender.com/api/ingest-metrics}}"
+        test -n "$TARGET_ENDPOINT" || { echo "::error::Myco requires metrics_endpoint."; exit 1; }
         test -n "$METRICS_API_KEY" || { echo "::error::Myco requires metrics_api_key. Check that MYCO_METRICS_API_KEY is an accessible Actions secret for this PR; its value is not printed."; exit 1; }
         test -n "$CLIENT_ID" || { echo "::error::Myco requires client_id. Set the MYCO_CLIENT_ID Actions variable and map it to this action input."; exit 1; }
     - name: Run Myco PR Reviewer
@@ -235,7 +237,7 @@ runs:
         JIRA_ISSUE_TYPE: ${{ inputs.jira_issue_type }}
         JIRA_LABELS: ${{ inputs.jira_labels }}
         JIRA_ASSIGNEE_ACCOUNT_ID: ${{ inputs.jira_assignee_account_id }}
-        METRICS_ENDPOINT: ${{ inputs.metrics_endpoint }}
+        METRICS_ENDPOINT: ${{ inputs.metrics_endpoint || env.METRICS_ENDPOINT || env.MYCO_METRICS_ENDPOINT || 'https://myco-deploy.onrender.com/api/ingest-metrics' }}
         METRICS_API_KEY: ${{ inputs.metrics_api_key }}
         CLIENT_ID: ${{ inputs.client_id }}
 

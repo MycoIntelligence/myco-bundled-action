@@ -69,7 +69,17 @@ async function main() {
     console.log(`::add-mask::${grantToken}`);
 
     if (process.env.GITHUB_OUTPUT) {
-      appendFileSync(process.env.GITHUB_OUTPUT, `grant=${grantToken}\nclient_id=${clientId}\n`);
+      appendFileSync(
+        process.env.GITHUB_OUTPUT,
+        `grant=${grantToken}\nclient_id=${clientId}\nmetrics_endpoint=${controlPlaneUrl}/api/ingest-metrics\n`
+      );
+    }
+
+    if (process.env.GITHUB_ENV) {
+      appendFileSync(
+        process.env.GITHUB_ENV,
+        `METRICS_ENDPOINT=${controlPlaneUrl}/api/ingest-metrics\nMYCO_METRICS_ENDPOINT=${controlPlaneUrl}/api/ingest-metrics\n`
+      );
     }
 
     console.log(`✅ Myco review access authorized for ${repository} (Customer ID: ${clientId})`);

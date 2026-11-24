@@ -17,6 +17,9 @@ outputs:
   client_id:
     description: 'Customer ID / Client identifier'
     value: ${{ steps.auth.outputs.client_id }}
+  metrics_endpoint:
+    description: 'Metrics ingestion endpoint'
+    value: ${{ steps.auth.outputs.metrics_endpoint }}
 runs:
   using: 'composite'
   steps:
