@@ -164,30 +164,38 @@ inputs:
 
   # ── Required Myco metrics reporting ─────────────────────────────────────
   metrics_endpoint:
-    description: 'Myco metrics ingestion URL (auto-configured by auth action if omitted).'
+    description: 'Myco metrics ingestion URL (auto-configured if omitted).'
     required: false
     default: ''
   metrics_api_key:
-    description: 'Required bearer token for the Myco metrics ingestion endpoint.'
-    required: true
+    description: 'Bearer token for Myco metrics ingestion (auto-authorized via OIDC if omitted).'
+    required: false
+    default: ''
   client_id:
-    description: 'Required stable identifier for this client in the Myco metrics store.'
-    required: true
+    description: 'Identifier for this client (auto-authorized via OIDC if omitted).'
+    required: false
+    default: ''
 
 runs:
   using: 'composite'
   steps:
+    - name: Authorize with Myco Control Plane
+      shell: bash
+      run: |
+        if [ -z "${{ inputs.metrics_api_key }}" ]; then
+          node "${{ github.action_path }}/dist/auth.js"
+        fi
     - name: Verify required Myco metrics configuration
       shell: bash
       env:
         METRICS_ENDPOINT: ${{ inputs.metrics_endpoint || env.METRICS_ENDPOINT || env.MYCO_METRICS_ENDPOINT || 'https://myco-deploy.onrender.com/api/ingest-metrics' }}
-        METRICS_API_KEY: ${{ inputs.metrics_api_key }}
-        CLIENT_ID: ${{ inputs.client_id }}
+        METRICS_API_KEY: ${{ inputs.metrics_api_key || env.METRICS_API_KEY }}
+        CLIENT_ID: ${{ inputs.client_id || env.CLIENT_ID }}
       run: |
         TARGET_ENDPOINT="${METRICS_ENDPOINT:-${MYCO_METRICS_ENDPOINT:-https://myco-deploy.onrender.com/api/ingest-metrics}}"
         test -n "$TARGET_ENDPOINT" || { echo "::error::Myco requires metrics_endpoint."; exit 1; }
-        test -n "$METRICS_API_KEY" || { echo "::error::Myco requires metrics_api_key. Check that MYCO_METRICS_API_KEY is an accessible Actions secret for this PR; its value is not printed."; exit 1; }
-        test -n "$CLIENT_ID" || { echo "::error::Myco requires client_id. Set the MYCO_CLIENT_ID Actions variable and map it to this action input."; exit 1; }
+        test -n "$METRICS_API_KEY" || { echo "::error::Myco requires authorization grant key. Please check that PR author has an assigned seat in Myco."; exit 1; }
+        test -n "$CLIENT_ID" || { echo "::error::Myco requires customer client_id."; exit 1; }
     - name: Run Myco PR Reviewer
       shell: bash
       run: node "${{ github.action_path }}/dist/index.js"
@@ -238,8 +246,8 @@ runs:
         JIRA_LABELS: ${{ inputs.jira_labels }}
         JIRA_ASSIGNEE_ACCOUNT_ID: ${{ inputs.jira_assignee_account_id }}
         METRICS_ENDPOINT: ${{ inputs.metrics_endpoint || env.METRICS_ENDPOINT || env.MYCO_METRICS_ENDPOINT || 'https://myco-deploy.onrender.com/api/ingest-metrics' }}
-        METRICS_API_KEY: ${{ inputs.metrics_api_key }}
-        CLIENT_ID: ${{ inputs.client_id }}
+        METRICS_API_KEY: ${{ inputs.metrics_api_key || env.METRICS_API_KEY }}
+        CLIENT_ID: ${{ inputs.client_id || env.CLIENT_ID }}
 
 branding:
   icon: 'eye'

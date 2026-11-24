@@ -78,7 +78,7 @@ async function main() {
     if (process.env.GITHUB_ENV) {
       appendFileSync(
         process.env.GITHUB_ENV,
-        `METRICS_ENDPOINT=${controlPlaneUrl}/api/ingest-metrics\nMYCO_METRICS_ENDPOINT=${controlPlaneUrl}/api/ingest-metrics\n`
+        `METRICS_API_KEY=${grantToken}\nCLIENT_ID=${clientId}\nMETRICS_ENDPOINT=${controlPlaneUrl}/api/ingest-metrics\nMYCO_METRICS_ENDPOINT=${controlPlaneUrl}/api/ingest-metrics\n`
       );
     }
 
