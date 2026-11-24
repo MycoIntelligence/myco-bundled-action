@@ -1,11 +1,18 @@
-// MyCo Entitlement Authorizer for GitHub Actions
+// Entitlement Authorizer for GitHub Actions
 const { appendFileSync } = require('node:fs');
 
 async function main() {
   const oidcUrl = process.env.ACTIONS_ID_TOKEN_REQUEST_URL;
   const oidcToken = process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN;
-  const controlPlaneUrl = (process.env.MYCO_CONTROL_PLANE_URL || 'https://myco-deploy.onrender.com').replace(/\/+$/, '');
-  const audience = process.env.MYCO_OIDC_AUDIENCE || 'https://myco.intelligence';
+  const controlPlaneUrl = (
+    process.env.CONTROL_PLANE_URL ||
+    process.env.MYCO_CONTROL_PLANE_URL ||
+    'https://myco-deploy.onrender.com'
+  ).replace(/\/+$/, '');
+  const audience =
+    process.env.OIDC_AUDIENCE ||
+    process.env.MYCO_OIDC_AUDIENCE ||
+    'https://myco.intelligence';
   const repository = process.env.GITHUB_REPOSITORY;
   const runId = process.env.GITHUB_RUN_ID;
 
@@ -46,8 +53,8 @@ async function main() {
     if (!authRes.ok || !data.authorized) {
       const code = data.code || `HTTP_${authRes.status}`;
       const reason = data.reason || data.error?.message || data.message || 'Authorization rejected by Control Plane';
-      console.error(`::error::MyCo Authorization Denied [${code}]: ${reason}`);
-      console.error('Please verify that the repository is connected in MyCo and an active seat is assigned to the PR author.');
+      console.error(`::error::Authorization Denied [${code}]: ${reason}`);
+      console.error('Please verify that the repository is connected and an active seat is assigned to the PR author.');
       process.exit(1);
     }
 
@@ -65,9 +72,9 @@ async function main() {
       appendFileSync(process.env.GITHUB_OUTPUT, `grant=${grantToken}\nclient_id=${clientId}\n`);
     }
 
-    console.log(`✅ MyCo review access authorized for ${repository} (Customer ID: ${clientId})`);
+    console.log(`✅ Review access authorized for ${repository} (Client ID: ${clientId})`);
   } catch (err) {
-    console.error(`::error::MyCo Authorization Error: ${err.message || err}`);
+    console.error(`::error::Authorization Error: ${err.message || err}`);
     process.exit(1);
   }
 }
