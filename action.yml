@@ -248,6 +248,24 @@ runs:
         METRICS_ENDPOINT: ${{ inputs.metrics_endpoint || env.METRICS_ENDPOINT || env.MYCO_METRICS_ENDPOINT || 'https://myco-deploy.onrender.com/api/ingest-metrics' }}
         METRICS_API_KEY: ${{ inputs.metrics_api_key || env.METRICS_API_KEY }}
         CLIENT_ID: ${{ inputs.client_id || env.CLIENT_ID }}
+    - name: Publish Review Summary
+      if: always()
+      shell: bash
+      run: |
+        REVIEW_DIR="${{ inputs.output_dir || './reviews' }}"
+        if [ -d "$REVIEW_DIR" ]; then
+          find "$REVIEW_DIR" -name "*_review.md" -type f | while read -r f; do
+            cat "$f" >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+          done
+        fi
+    - name: Upload Myco Review Artifact
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: myco-review-report
+        path: ${{ inputs.output_dir || './reviews' }}
+        if-no-files-found: ignore
 
 branding:
   icon: 'eye'
