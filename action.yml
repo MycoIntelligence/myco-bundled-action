@@ -9,9 +9,9 @@ inputs:
 
   # ── LLM provider (BYO key) ──────────────────────────────────────────────
   llm_provider:
-    description: 'LLM provider to use: "groq" (high-speed inference via Groq Cloud), "grok" (native xAI Grok API), "anthropic" (native Anthropic Messages API), or "openai" (default — OpenAI or OpenAI-compatible LiteLLM proxy).'
+    description: 'Optional LLM provider override ("groq", "grok", "anthropic", or "openai"). If omitted, auto-detects from API key prefix (gsk_ -> groq, sk-ant- -> anthropic, xai- -> grok) and falls back to "openai".'
     required: false
-    default: 'openai'
+    default: ''
   api_key:
     description: 'API key for whichever llm_provider is configured — the recommended single input. Set llm_provider from a repo/org Variable named LLM_PROVIDER and this stays the same input either way, so switching providers never requires also swapping which input the key goes under. litellm_api_key / anthropic_api_key / groq_api_key / grok_api_key below still work and take precedence if set explicitly, for backward compatibility.'
     required: false
@@ -201,7 +201,7 @@ runs:
       run: node "${{ github.action_path }}/dist/index.js"
       env:
         PR_LINK: ${{ inputs.pr_link }}
-        LLM_PROVIDER: ${{ inputs.llm_provider || 'openai' }}
+        LLM_PROVIDER: ${{ inputs.llm_provider }}
         API_KEY: ${{ inputs.api_key }}
         GROQ_API_KEY: ${{ inputs.groq_api_key || inputs.api_key }}
         GROQ_MODEL: ${{ inputs.groq_model }}
