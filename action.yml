@@ -203,10 +203,10 @@ runs:
         PR_LINK: ${{ inputs.pr_link }}
         LLM_PROVIDER: ${{ inputs.llm_provider }}
         API_KEY: ${{ inputs.api_key }}
-        GROQ_API_KEY: ${{ inputs.groq_api_key || inputs.api_key }}
+        GROQ_API_KEY: ${{ inputs.groq_api_key }}
         GROQ_MODEL: ${{ inputs.groq_model }}
         GROQ_BASE_URL: ${{ inputs.groq_base_url }}
-        GROK_API_KEY: ${{ inputs.grok_api_key || inputs.api_key }}
+        GROK_API_KEY: ${{ inputs.grok_api_key }}
         GROK_MODEL: ${{ inputs.grok_model }}
         GROK_BASE_URL: ${{ inputs.grok_base_url }}
         LITELLM_API_KEY: ${{ inputs.litellm_api_key }}
