@@ -163,6 +163,10 @@ inputs:
     required: false
 
   # ── Required Myco metrics reporting ─────────────────────────────────────
+  control_plane_url:
+    description: 'Myco Control Plane URL (defaults to MYCO_CONTROL_PLANE_URL / CONTROL_PLANE_URL env or secret).'
+    required: false
+    default: ''
   metrics_endpoint:
     description: 'Myco metrics ingestion URL (auto-configured if omitted).'
     required: false
@@ -181,6 +185,9 @@ runs:
   steps:
     - name: Authorize with Myco Control Plane
       shell: bash
+      env:
+        CONTROL_PLANE_URL: ${{ inputs.control_plane_url || env.CONTROL_PLANE_URL || env.MYCO_CONTROL_PLANE_URL }}
+        MYCO_CONTROL_PLANE_URL: ${{ inputs.control_plane_url || env.MYCO_CONTROL_PLANE_URL || env.CONTROL_PLANE_URL }}
       run: |
         if [ -z "${{ inputs.metrics_api_key }}" ]; then
           node "${{ github.action_path }}/dist/auth.js"
@@ -188,12 +195,13 @@ runs:
     - name: Verify required Myco metrics configuration
       shell: bash
       env:
-        METRICS_ENDPOINT: ${{ inputs.metrics_endpoint || env.METRICS_ENDPOINT || env.MYCO_METRICS_ENDPOINT || 'https://myco-backend-8t13.onrender.com/api/ingest-metrics' }}
+        CONTROL_PLANE_URL: ${{ inputs.control_plane_url || env.CONTROL_PLANE_URL || env.MYCO_CONTROL_PLANE_URL }}
+        METRICS_ENDPOINT: ${{ inputs.metrics_endpoint || env.METRICS_ENDPOINT || env.MYCO_METRICS_ENDPOINT }}
         METRICS_API_KEY: ${{ inputs.metrics_api_key || env.METRICS_API_KEY }}
         CLIENT_ID: ${{ inputs.client_id || env.CLIENT_ID }}
       run: |
-        TARGET_ENDPOINT="${METRICS_ENDPOINT:-${MYCO_METRICS_ENDPOINT:-https://myco-backend-8t13.onrender.com/api/ingest-metrics}}"
-        test -n "$TARGET_ENDPOINT" || { echo "::error::Myco requires metrics_endpoint."; exit 1; }
+        TARGET_ENDPOINT="${METRICS_ENDPOINT:-${MYCO_METRICS_ENDPOINT:-${CONTROL_PLANE_URL:+${CONTROL_PLANE_URL%/}/api/ingest-metrics}}}"
+        test -n "$TARGET_ENDPOINT" || { echo "::error::Myco requires metrics_endpoint (or MYCO_CONTROL_PLANE_URL)."; exit 1; }
         test -n "$METRICS_API_KEY" || { echo "::error::Myco requires authorization grant key. Please check that PR author has an assigned seat in Myco."; exit 1; }
         test -n "$CLIENT_ID" || { echo "::error::Myco requires customer client_id."; exit 1; }
     - name: Run Myco PR Reviewer
@@ -245,7 +253,7 @@ runs:
         JIRA_ISSUE_TYPE: ${{ inputs.jira_issue_type }}
         JIRA_LABELS: ${{ inputs.jira_labels }}
         JIRA_ASSIGNEE_ACCOUNT_ID: ${{ inputs.jira_assignee_account_id }}
-        METRICS_ENDPOINT: ${{ inputs.metrics_endpoint || env.METRICS_ENDPOINT || env.MYCO_METRICS_ENDPOINT || 'https://myco-backend-8t13.onrender.com/api/ingest-metrics' }}
+        METRICS_ENDPOINT: ${{ inputs.metrics_endpoint || env.METRICS_ENDPOINT || env.MYCO_METRICS_ENDPOINT }}
         METRICS_API_KEY: ${{ inputs.metrics_api_key || env.METRICS_API_KEY }}
         CLIENT_ID: ${{ inputs.client_id || env.CLIENT_ID }}
     - name: Publish Review Summary
