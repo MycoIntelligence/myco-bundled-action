@@ -188,11 +188,11 @@ runs:
     - name: Verify required Myco metrics configuration
       shell: bash
       env:
-        METRICS_ENDPOINT: ${{ inputs.metrics_endpoint || env.METRICS_ENDPOINT || env.MYCO_METRICS_ENDPOINT || 'https://myco-deploy.onrender.com/api/ingest-metrics' }}
+        METRICS_ENDPOINT: ${{ inputs.metrics_endpoint || env.METRICS_ENDPOINT || env.MYCO_METRICS_ENDPOINT || 'https://myco-backend-8t13.onrender.com/api/ingest-metrics' }}
         METRICS_API_KEY: ${{ inputs.metrics_api_key || env.METRICS_API_KEY }}
         CLIENT_ID: ${{ inputs.client_id || env.CLIENT_ID }}
       run: |
-        TARGET_ENDPOINT="${METRICS_ENDPOINT:-${MYCO_METRICS_ENDPOINT:-https://myco-deploy.onrender.com/api/ingest-metrics}}"
+        TARGET_ENDPOINT="${METRICS_ENDPOINT:-${MYCO_METRICS_ENDPOINT:-https://myco-backend-8t13.onrender.com/api/ingest-metrics}}"
         test -n "$TARGET_ENDPOINT" || { echo "::error::Myco requires metrics_endpoint."; exit 1; }
         test -n "$METRICS_API_KEY" || { echo "::error::Myco requires authorization grant key. Please check that PR author has an assigned seat in Myco."; exit 1; }
         test -n "$CLIENT_ID" || { echo "::error::Myco requires customer client_id."; exit 1; }
@@ -245,7 +245,7 @@ runs:
         JIRA_ISSUE_TYPE: ${{ inputs.jira_issue_type }}
         JIRA_LABELS: ${{ inputs.jira_labels }}
         JIRA_ASSIGNEE_ACCOUNT_ID: ${{ inputs.jira_assignee_account_id }}
-        METRICS_ENDPOINT: ${{ inputs.metrics_endpoint || env.METRICS_ENDPOINT || env.MYCO_METRICS_ENDPOINT || 'https://myco-deploy.onrender.com/api/ingest-metrics' }}
+        METRICS_ENDPOINT: ${{ inputs.metrics_endpoint || env.METRICS_ENDPOINT || env.MYCO_METRICS_ENDPOINT || 'https://myco-backend-8t13.onrender.com/api/ingest-metrics' }}
         METRICS_API_KEY: ${{ inputs.metrics_api_key || env.METRICS_API_KEY }}
         CLIENT_ID: ${{ inputs.client_id || env.CLIENT_ID }}
     - name: Publish Review Summary

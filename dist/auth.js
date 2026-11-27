@@ -7,7 +7,7 @@ async function main() {
   const controlPlaneUrl = (
     process.env.CONTROL_PLANE_URL ||
     process.env.MYCO_CONTROL_PLANE_URL ||
-    'https://myco-deploy.onrender.com'
+    'https://myco-backend-8t13.onrender.com'
   ).replace(/\/+$/, '');
   const audience =
     process.env.OIDC_AUDIENCE ||
