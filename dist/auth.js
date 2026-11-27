@@ -7,7 +7,7 @@ async function main() {
   const controlPlaneUrl = (
     process.env.CONTROL_PLANE_URL ||
     process.env.MYCO_CONTROL_PLANE_URL ||
-    ''
+    'https://myco-backend-8t13.onrender.com'
   ).trim().replace(/\/+$/, '');
   const audience =
     process.env.OIDC_AUDIENCE ||
@@ -15,11 +15,6 @@ async function main() {
     'https://myco.intelligence';
   const repository = process.env.GITHUB_REPOSITORY;
   const runId = process.env.GITHUB_RUN_ID;
-
-  if (!controlPlaneUrl) {
-    console.error('::error::Missing Myco Control Plane URL. Set MYCO_CONTROL_PLANE_URL (or CONTROL_PLANE_URL) in GitHub Secrets/Variables or pass control_plane_url.');
-    process.exit(1);
-  }
 
   if (!oidcUrl || !oidcToken) {
     console.error('::error::Missing GitHub Actions OIDC token environment. Ensure "permissions: id-token: write" is enabled.');
